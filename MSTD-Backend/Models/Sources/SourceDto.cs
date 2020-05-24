@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSTD_Backend.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace MSTD_Backend.Models.Sources
         /// <summary>
         /// Enum idenfying the source
         /// </summary>
-        public TorrenttSource UniqueId { get; set; }
+        public TorrentSource UniqueId { get; set; }
 
         /// <summary>
         /// A list of possible Urls and their availability for queries

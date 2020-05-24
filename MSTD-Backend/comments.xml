@@ -4,9 +4,9 @@
         <name>MSTD-Backend</name>
     </assembly>
     <members>
-        <member name="M:MSTD_Backend.Controllers.SourcesController.GetSources">
+        <member name="M:MSTD_Backend.Controllers.MstdController.GetSources">
             <summary>
-            Returns a list of sources for MSTD client app to use
+            Returns a list of torrrent sources for MSTD client app to use for customization
             </summary>
             <returns></returns>
         </member>
@@ -44,6 +44,14 @@
             <summary>
             A list of possible Urls and their availability for queries
             </summary>
+        </member>
+        <member name="M:MSTD_Backend.Services.SourceBase.BaseGetSourceStates(System.Func{System.Threading.Tasks.Task{MSTD_Backend.Data.TorrentQueryResult}})">
+            <summary>
+            Checks if each sources are active or not
+            </summary>
+            <typeparam name="T">Type of result the func yields</typeparam>
+            <param name="func">Function that throws an exception if source is dead</param>
+            <returns></returns>
         </member>
     </members>
 </doc>
