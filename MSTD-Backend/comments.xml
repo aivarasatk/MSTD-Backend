@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MSTD-Backend</name>
+    </assembly>
+    <members>
+        <member name="M:MSTD_Backend.Controllers.SourcesController.GetSources">
+            <summary>
+            Returns a list of sources for MSTD client app to use
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:MSTD_Backend.Models.Sources.Site.Url">
+            <summary>
+            Url of the mirror or orgininal site
+            </summary>
+        </member>
+        <member name="P:MSTD_Backend.Models.Sources.Site.State">
+            <summary>
+            Indicates whether Url can be used for queries
+            </summary>
+        </member>
+        <member name="F:MSTD_Backend.Models.Sources.SiteState.Active">
+            <summary>
+            State indicates that queries can be performed
+            </summary>
+        </member>
+        <member name="F:MSTD_Backend.Models.Sources.SiteState.Down">
+            <summary>
+            State indicates that queries CANNOT be performed
+            </summary>
+        </member>
+        <member name="P:MSTD_Backend.Models.Sources.SourceDto.Name">
+            <summary>
+            UI friendly source name
+            </summary>
+        </member>
+        <member name="P:MSTD_Backend.Models.Sources.SourceDto.UniqueId">
+            <summary>
+            Enum idenfying the source
+            </summary>
+        </member>
+        <member name="P:MSTD_Backend.Models.Sources.SourceDto.Sites">
+            <summary>
+            A list of possible Urls and their availability for queries
+            </summary>
+        </member>
+    </members>
+</doc>
