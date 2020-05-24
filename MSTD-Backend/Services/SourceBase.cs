@@ -12,6 +12,7 @@ namespace MSTD_Backend.Services
     public abstract class SourceBase
     {
         protected HttpClient _httpClient;
+        protected int _timeoutMs;
         protected string _baseUrl;
         protected string _searchEndpoint;
         protected string _searchResource;
@@ -20,8 +21,9 @@ namespace MSTD_Backend.Services
 
         public SourceBase()
         {
+            _timeoutMs = 7000;
             _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromMilliseconds(7000);
+            _httpClient.Timeout = TimeSpan.FromMilliseconds(_timeoutMs);
 
             _mirrors = new List<string>();
         }

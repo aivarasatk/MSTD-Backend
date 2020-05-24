@@ -28,11 +28,6 @@ namespace MSTD_Backend.Mapping
             return DirectMapping(category);
         }
 
-        public  static string ToRargbCategory(TorrentCategory category)
-        {
-            return DirectMapping(category).ToLower();
-        }
-
         private static string DirectMapping(TorrentCategory category)
         {
             return category switch

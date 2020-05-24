@@ -30,7 +30,7 @@ namespace MSTD_Backend.Services
             _searchEndpoint = Path.Combine(_baseUrl, _searchResource);
 
             _restClient = new RestClient(_baseUrl);
-            _restClient.Timeout = 7 * 1000;
+            _restClient.Timeout = _timeoutMs;
         }
 
         public string FullTorrentUrl(string uri) => TorrentUrl(uri);

@@ -5,7 +5,6 @@ namespace MSTD_Backend.Enums
     {
         ThePirateBay,
         Leetx,
-        Rargb,
         Kickass
     }
 }
