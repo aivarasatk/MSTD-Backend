@@ -6,7 +6,7 @@
     <members>
         <member name="M:MSTD_Backend.Controllers.MstdController.GetSources">
             <summary>
-            Returns a list of torrrent sources for MSTD client app to use for customization
+            Returns a list of torrrent sources for MSTD client app
             </summary>
             <returns></returns>
         </member>

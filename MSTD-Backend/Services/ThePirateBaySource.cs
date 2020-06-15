@@ -12,12 +12,10 @@ namespace MSTD_Backend.Services
 {
     public class ThePirateBaySource : SourceBase, IThePirateBaySource 
     {
-        private readonly ILogService _logger;
         private readonly IThePirateBayParser _parser;
 
-        public ThePirateBaySource(ILogService logger, IThePirateBayParser parser, IConfiguration config)
+        public ThePirateBaySource(IThePirateBayParser parser, IConfiguration config)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _parser = parser ?? throw new ArgumentNullException(nameof(parser));
 
             _baseUrl = config.GetValue<string>("UrlInfo:LeetxUrl");

@@ -13,15 +13,13 @@ namespace MSTD_Backend.Services
 {
     public class LeetxSource : SourceBase, ILeetxSource
     {
-        private readonly ILogService _logger;
         private readonly ILeetxParser _parser;
 
         private string _categorySearchResource;
         private string _categorySearchEndpoint;
 
-        public LeetxSource(ILogService logger, ILeetxParser parser, IConfiguration config)
+        public LeetxSource(ILeetxParser parser, IConfiguration config)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _parser = parser ?? throw new ArgumentNullException(nameof(parser));
 
             _baseUrl = config.GetValue<string>("UrlInfo:LeetxUrl");

@@ -3,6 +3,7 @@ using MSTD_Backend.Constants;
 using MSTD_Backend.Data;
 using MSTD_Backend.Enums;
 using MSTD_Backend.Interfaces;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,8 +14,6 @@ namespace MSTD_Backend.Services
 {
     public class ThePirateBayParser : ParserBase, IThePirateBayParser
     {
-        private readonly ILogService _logger;
-
         private readonly string _dateStringToReplace;
         private readonly string _sizeStringToReplace;
         private readonly string _uploaderStringToReplace;
@@ -25,10 +24,9 @@ namespace MSTD_Backend.Services
             "MM-dd HH:mm"
         };
 
-        public ThePirateBayParser(ILogService logger)
+        public ThePirateBayParser()
         {
             DataColumnCount = 3;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             _dateStringToReplace = "Uploaded";
             _sizeStringToReplace = "Size";
@@ -41,7 +39,7 @@ namespace MSTD_Backend.Services
             {
                 try
                 {
-                    _logger.Information("ThePirateBay parsing");
+                    Log.Information("ThePirateBay parsing");
                     var htmlDocument = LoadedHtmlDocument(pageContents);
 
                     var tableRows = htmlDocument.DocumentNode.SelectNodes("//table[@id='searchResult']/tr");//gets table rows that contain torrent data without table header
@@ -54,21 +52,21 @@ namespace MSTD_Backend.Services
                         var dataColumns = dataRow.SelectNodes("td[position()>1]");//skips first column because it does not contain useful info
                         if (dataColumns == null || dataColumns.Count != DataColumnCount)
                         {
-                            _logger.Warning($"Could not find all columns for torrent {Environment.NewLine} {dataRow.OuterHtml}");
+                            Log.Warning($"Could not find all columns for torrent {Environment.NewLine} {dataRow.OuterHtml}");
                             continue;
                         }
 
                         var titleNode = dataColumns[ThePirateBayTorrentIndexer.TitleNode].SelectSingleNode("div[@class='detName']/a[@class='detLink']");
                         if (titleNode == null)
                         {
-                            _logger.Warning($"Could not find title node for torrent {Environment.NewLine} {dataColumns[ThePirateBayTorrentIndexer.TitleNode].OuterHtml}");
+                            Log.Warning($"Could not find title node for torrent {Environment.NewLine} {dataColumns[ThePirateBayTorrentIndexer.TitleNode].OuterHtml}");
                             continue;
                         }
 
                         var title = titleNode.InnerText;
                         if (string.IsNullOrEmpty(title))//empty title entry makes no sense. log and skip
                         {
-                            _logger.Warning($"Empty title from {Environment.NewLine}{titleNode.OuterHtml}");
+                            Log.Warning($"Empty title from {Environment.NewLine}{titleNode.OuterHtml}");
                             continue;
                         }
                         var torrentUri = titleNode.Attributes?.FirstOrDefault(a => a.Name == "href")?.Value;//this field is not vital, null is acceptable
@@ -83,14 +81,14 @@ namespace MSTD_Backend.Services
                         }
                         catch (Exception ex)
                         {
-                            _logger.Warning($"Could not find magnet link for {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.TitleNode].OuterHtml}", ex);
+                            Log.Warning($"Could not find magnet link for {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.TitleNode].OuterHtml}", ex);
                             continue;//no point in showing non-downloadable entry
                         }
 
                         var detailsNode = dataColumns[ThePirateBayTorrentIndexer.TitleNode].SelectSingleNode("font[@class='detDesc']");
                         if (detailsNode == null)
                         {
-                            _logger.Warning($"Could not find details node for {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.TitleNode].OuterHtml}");
+                            Log.Warning($"Could not find details node for {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.TitleNode].OuterHtml}");
                             continue;
                         }
 
@@ -107,10 +105,10 @@ namespace MSTD_Backend.Services
                         }
 
                         if (!int.TryParse(dataColumns[ThePirateBayTorrentIndexer.Seeders].InnerText, out var seeders))
-                            _logger.Warning($"Could not parse seeders {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.Seeders].OuterHtml}");
+                            Log.Warning($"Could not parse seeders {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.Seeders].OuterHtml}");
 
                         if (!int.TryParse(dataColumns[ThePirateBayTorrentIndexer.Leechers].InnerText, out var leechers))
-                            _logger.Warning($"Could not parse leechers {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.Leechers].OuterHtml}");
+                            Log.Warning($"Could not parse leechers {Environment.NewLine}{dataColumns[ThePirateBayTorrentIndexer.Leechers].OuterHtml}");
 
                         var splitSize = size.Split(' ');
                         result.Add(new TorrentEntry
@@ -140,7 +138,7 @@ namespace MSTD_Backend.Services
                 }
                 catch(Exception ex)
                 {
-                    _logger.Warning("Pirate bay parse exception", ex);
+                    Log.Warning("Pirate bay parse exception", ex);
                     throw;
                 }
                 
@@ -177,7 +175,7 @@ namespace MSTD_Backend.Services
                 var detailsNode = htmlDocument.DocumentNode.SelectSingleNode("//pre");
                 if (detailsNode == null)
                 {
-                    _logger.Warning($"Could not find details node for thepiratebay");
+                    Log.Warning($"Could not find details node for thepiratebay");
                     return string.Empty;
                 }
 

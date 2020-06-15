@@ -14,14 +14,12 @@ namespace MSTD_Backend.Services
 {
     public class KickassSource : SourceBase, IKickassSource
     {
-        private readonly ILogService _logger;
         private readonly IKickassParser _parser;
 
         private RestClient _restClient;
 
-        public KickassSource(ILogService logger, IKickassParser parser, IConfiguration config)
+        public KickassSource(IKickassParser parser, IConfiguration config)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _parser = parser ?? throw new ArgumentNullException(nameof(parser));
 
             _baseUrl = config.GetValue<string>("UrlInfo:KickassUrl");

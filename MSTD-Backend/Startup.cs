@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MSTD_Backend.Interfaces;
 using MSTD_Backend.Services;
@@ -32,11 +26,17 @@ namespace MSTD_Backend
         {
             InitializeIoc(services);
             services.AddControllers()
-                .AddNewtonsoftJson()
+                .AddNewtonsoftJson(opt =>
+                {
+                    //response formatting
+                    opt.UseMemberCasing();
+                    opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+                })
                 .AddJsonOptions(opt =>
                 {
-                    opt.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    //these settings are only used in swagger doc
                     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    opt.JsonSerializerOptions.PropertyNamingPolicy = null;
                 });
 
             services.AddSwaggerGen(c =>
@@ -48,8 +48,6 @@ namespace MSTD_Backend
 
         private void InitializeIoc(IServiceCollection services)
         {
-            services.AddSingleton<ILogService, LogService>();
-
             services.AddSingleton<ILeetxSource, LeetxSource>();
             services.AddSingleton<ILeetxParser, LeetxParser>();
 
@@ -58,6 +56,8 @@ namespace MSTD_Backend
 
             services.AddSingleton<IKickassSource, KickassSource>();
             services.AddSingleton<IKickassParser, KickassParser>();
+
+            services.AddHostedService<SiteHealthChecker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
