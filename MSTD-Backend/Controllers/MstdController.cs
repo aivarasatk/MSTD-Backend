@@ -36,20 +36,16 @@ namespace MSTD_Backend.Controllers
         {
             var sources = await _cache.SourceStatesAsync();
 
-            var result = new List<SourceDto>();
-            foreach(var source in sources)
+            var result = sources.Select(s => new SourceDto
             {
-                result.Add(new SourceDto
+                Name = _helper.SourceName(s.Key),
+                UniqueId = s.Key,
+                Sites = s.Value.Select(s => new Site
                 {
-                    Name = _helper.SourceName(source.Key),
-                    UniqueId = source.Key,
-                    Sites = source.Value.Select(s => new Site
-                    {
-                        State = s.IsAlive ? SiteState.Active : SiteState.Down,
-                        Url = s.SiteName
-                    })
-                });
-            }
+                    State = s.IsAlive ? SiteState.Active : SiteState.Down,
+                    Url = s.SiteName
+                })
+            });
             return Ok(result);
         }
     }
