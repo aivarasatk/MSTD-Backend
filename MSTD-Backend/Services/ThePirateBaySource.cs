@@ -18,9 +18,9 @@ namespace MSTD_Backend.Services
         {
             _parser = parser ?? throw new ArgumentNullException(nameof(parser));
 
-            _baseUrl = config.GetValue<string>("UrlInfo:LeetxUrl");
+            _baseUrl = config.GetValue<string>("UrlInfo:ThePirateBayUrl");
 
-            _searchResource = config.GetValue<string>("UrlInfo:LeetxSearchEndpoint");
+            _searchResource = config.GetValue<string>("UrlInfo:ThePirateBaySearchEndpoint");
             _searchEndpoint = Path.Combine(_baseUrl, _searchResource);
 
             _mirrors = new[]// TODO: FROM CONFIG

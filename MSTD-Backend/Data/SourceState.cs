@@ -8,13 +8,13 @@ namespace MSTD_Backend.Data
 {
     public class SourceState
     {
-        public SourceState(string source, bool isAlive)
+        public SourceState(string site, bool isAlive)
         {
-            SourceName = source;
+            SiteName = site;
             IsAlive = isAlive;
         }
 
-        public string SourceName { get; private set; }
+        public string SiteName { get; private set; }
         public bool IsAlive{ get; private set; }
     }
 }

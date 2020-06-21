@@ -42,7 +42,7 @@ namespace MSTD_Backend.Services
                     Log.Information("ThePirateBay parsing");
                     var htmlDocument = LoadedHtmlDocument(pageContents);
 
-                    var tableRows = htmlDocument.DocumentNode.SelectNodes("//table[@id='searchResult']/tr");//gets table rows that contain torrent data without table header
+                    var tableRows = htmlDocument.DocumentNode.SelectNodes("//table[@id='searchResult']/tr[position()<last()]");//gets table rows that contain torrent data without table header
                     if (NoTableEntries(tableRows))//probably end of results
                         return new TorrentQueryResult { IsLastPage = true };
 

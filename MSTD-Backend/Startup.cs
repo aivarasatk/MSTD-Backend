@@ -57,6 +57,9 @@ namespace MSTD_Backend
             services.AddSingleton<IKickassSource, KickassSource>();
             services.AddSingleton<IKickassParser, KickassParser>();
 
+            services.AddSingleton<SourcesHelper>();
+            services.AddSingleton<IStateCache, StateCache>();
+
             services.AddHostedService<SiteHealthChecker>();
         }
 
