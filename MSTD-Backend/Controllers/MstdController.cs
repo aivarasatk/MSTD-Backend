@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MSTD_Backend.Data;
 using MSTD_Backend.Enums;
 using MSTD_Backend.Interfaces;
 using MSTD_Backend.Models.Sources;
@@ -31,7 +34,7 @@ namespace MSTD_Backend.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("sources")]
-        [ProducesResponseType(typeof(IEnumerable<SourceDto>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<SourceDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSources()
         {
             var sources = await _cache.SourceStatesAsync();
@@ -48,5 +51,77 @@ namespace MSTD_Backend.Controllers
             });
             return Ok(result);
         }
+
+        //TODO: adjust sources to manage paging internally. e.g. tpb starts from 0 not from 1
+        //TODO: error message containing bad urls
+        [HttpGet("torrents")]
+        [ProducesResponseType(typeof(TorrentSearchResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTorrents(
+            [FromQuery][Required] ICollection<string> urls,
+            [FromQuery][Required] Sorting sortOrder, 
+            [FromQuery][Required] TorrentCategory category,
+            [FromQuery][Required] string searchValue,
+            [FromQuery][Required] int page)
+        {
+            if (page <= 0) 
+                return BadRequest(ErrorResponse(new ErrorMessage(message: "Invalid page number", value: page.ToString())));
+
+            var validUrls = ValidUrls(urls).ToArray();
+            if (!validUrls.Any()) 
+                return BadRequest(ErrorResponse(new ErrorMessage(message: "Provided urls are invalid")));
+
+            var mappedUrls = MapValidUrls(validUrls);
+            var torrentResults = await ExecuteTorrentSearch(mappedUrls, searchValue, category, sortOrder, page);
+
+
+            return Ok(new TorrentSearchResult
+            {
+                Torrents = torrentResults,
+                Errors = urls.Except(validUrls).Select(u => new ErrorMessage(message: "Invalid Url", value: u))
+            });
+        }
+
+        private IEnumerable<ErrorMessage> ErrorResponse(ErrorMessage errorMessage) => new[] { errorMessage };
+
+        private async Task<IEnumerable<TorrentQueryResult>> ExecuteTorrentSearch(IEnumerable<KeyValuePair<TorrentSource, string>> mappedUrls, 
+            string searchValue, TorrentCategory category, Sorting sortOrder, int page)
+        {
+            var res = new List<TorrentQueryResult>();
+            foreach (var url in mappedUrls)
+            {
+                var source = _helper.Sources()[url.Key];
+
+                source.UpdateUsedSource(url.Value);//TODO: refactor how searching works 
+
+                var torrents = category == TorrentCategory.All
+                    ? await source.GetTorrentsAsync(searchValue, page, sortOrder)
+                    : await source.GetTorrentsByCategoryAsync(searchValue, page, sortOrder, category);
+
+                res.Add(torrents);
+            }
+            return res;
+        }
+
+        private IEnumerable<KeyValuePair<TorrentSource, string>> MapValidUrls(IEnumerable<string> validUrls)
+        {
+            foreach(var url in validUrls)
+            {
+                foreach (var source in _helper.Sources())
+                {
+                    if (source.Value.GetSources().Contains(url))
+                    {
+                        yield return new KeyValuePair<TorrentSource, string>(source.Key, url);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<string> ValidUrls(ICollection<string> urls)
+        {
+            var sites = _helper.Sources().SelectMany(s => s.Value.GetSources());
+            return urls.Where(u => sites.Any(s => s == u));
+        }
+
     }
 }
