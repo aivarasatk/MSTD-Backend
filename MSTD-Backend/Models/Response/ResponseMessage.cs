@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace MSTD_Backend.Models.Response
 {
-    public class ErrorMessage
+    public class ResponseMessage
     {
-        public ErrorMessage() { }
-        public ErrorMessage(string message, string value = "")
+        public ResponseMessage() { }
+        public ResponseMessage(string message, string value = "")
         {
             Message = message;
             Value = value;

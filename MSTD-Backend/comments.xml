@@ -10,6 +10,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:MSTD_Backend.Controllers.MstdController.GetTorrents(System.Collections.Generic.ICollection{System.String},MSTD_Backend.Enums.Sorting,MSTD_Backend.Enums.TorrentCategory,System.String,System.Int32)">
+            <summary>
+            Provides access to torrent search based on provided parameters
+            </summary>
+            <param name="urls">Urls to use for search. Invalid urls will not be used</param>
+            <param name="sortOrder"></param>
+            <param name="category">In which torrent category to search</param>
+            <param name="searchValue">Text that is used to query torrents</param>
+            <param name="page">Current search page. Must be greater than 0</param>
+            <returns></returns>
+        </member>
         <member name="P:MSTD_Backend.Models.Sources.Site.Url">
             <summary>
             Url of the mirror or orgininal site

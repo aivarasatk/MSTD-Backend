@@ -10,12 +10,12 @@ namespace MSTD_Backend.Models.Response
     {
         public TorrentSearchResult() { }
         public TorrentSearchResult(IEnumerable<TorrentQueryResult> torrents,
-            IEnumerable<ErrorMessage> errors)
+            IEnumerable<ResponseMessage> warnings)
         {
             Torrents = torrents;
-            Errors = errors;
+            Warnings = warnings;
         }
         public IEnumerable<TorrentQueryResult> Torrents { get; set; }
-        public IEnumerable<ErrorMessage> Errors { get; set; }
+        public IEnumerable<ResponseMessage> Warnings { get; set; }
     }
 }

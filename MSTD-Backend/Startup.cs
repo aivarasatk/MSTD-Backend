@@ -2,6 +2,8 @@ using System;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,19 +27,23 @@ namespace MSTD_Backend
         public void ConfigureServices(IServiceCollection services)
         {
             InitializeIoc(services);
-            services.AddControllers()
-                .AddNewtonsoftJson(opt =>
-                {
-                    //response formatting
-                    opt.UseMemberCasing();
-                    opt.SerializerSettings.Converters.Add(new StringEnumConverter());
-                })
-                .AddJsonOptions(opt =>
-                {
-                    //these settings are only used in swagger doc
-                    opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    opt.JsonSerializerOptions.PropertyNamingPolicy = null;
-                });
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ProducesAttribute("application/json"));
+                options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+            })
+            .AddNewtonsoftJson(opt =>
+            {
+                //response formatting
+                opt.UseMemberCasing();
+                opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+            })
+            .AddJsonOptions(opt =>
+            {
+                //these settings are only used in swagger doc
+                opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                opt.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
 
             services.AddSwaggerGen(c =>
             {
