@@ -4,13 +4,13 @@
         <name>MSTD-Backend</name>
     </assembly>
     <members>
-        <member name="M:MSTD_Backend.Controllers.MstdController.GetSources">
+        <member name="M:MSTD_Backend.Controllers.MstdController.GetSourcesAsync">
             <summary>
             Returns a list of torrrent sources for MSTD client app
             </summary>
             <returns></returns>
         </member>
-        <member name="M:MSTD_Backend.Controllers.MstdController.GetTorrents(System.Collections.Generic.ICollection{System.String},MSTD_Backend.Enums.Sorting,MSTD_Backend.Enums.TorrentCategory,System.String,System.Int32)">
+        <member name="M:MSTD_Backend.Controllers.MstdController.GetTorrentsAsync(System.Collections.Generic.ICollection{System.String},MSTD_Backend.Enums.Sorting,MSTD_Backend.Enums.TorrentCategory,System.String,System.Int32)">
             <summary>
             Provides access to torrent search based on provided parameters
             </summary>

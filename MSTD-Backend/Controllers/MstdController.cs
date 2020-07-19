@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using MSTD_Backend.Interfaces;
 using MSTD_Backend.Models.Response;
 using MSTD_Backend.Models.Sources;
 using MSTD_Backend.Services;
+using Serilog;
 
 namespace MSTD_Backend.Controllers
 {
@@ -19,15 +21,16 @@ namespace MSTD_Backend.Controllers
     [Route("")]
     public class MstdController : ControllerBase
     {
-        private readonly IDictionary<TorrentSource, ITorrentDataSource> _sources;
         private readonly SourcesHelper _helper;
 
         private readonly IStateCache _cache;
+        private readonly ILogger _logger;
 
-        public MstdController(SourcesHelper helper, IStateCache cache)
+        public MstdController(SourcesHelper helper, IStateCache cache, ILogger logger)
         {
             _helper = helper;
             _cache = cache;
+            _logger = logger;
         }
 
         /// <summary>
@@ -36,7 +39,7 @@ namespace MSTD_Backend.Controllers
         /// <returns></returns>
         [HttpGet("sources")]
         [ProducesResponseType(typeof(IEnumerable<SourceDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSources()
+        public async Task<IActionResult> GetSourcesAsync()
         {
             var sources = await _cache.SourceStatesAsync();
 
@@ -53,8 +56,6 @@ namespace MSTD_Backend.Controllers
             return Ok(result);
         }
 
-        //TODO: adjust sources to manage paging internally. e.g. tpb starts from 0 not from 1
-        //TODO: error message containing bad urls
         /// <summary>
         /// Provides access to torrent search based on provided parameters
         /// </summary>
@@ -67,7 +68,7 @@ namespace MSTD_Backend.Controllers
         [HttpGet("torrents")]
         [ProducesResponseType(typeof(TorrentSearchResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IEnumerable<ResponseMessage>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetTorrents(
+        public async Task<IActionResult> GetTorrentsAsync(
             [FromQuery][Required] ICollection<string> urls,
             [FromQuery][Required] Sorting sortOrder, 
             [FromQuery][Required] TorrentCategory category,
@@ -89,6 +90,35 @@ namespace MSTD_Backend.Controllers
                 Torrents = torrentResults,
                 Warnings = urls.Except(validUrls).Select(u => new ResponseMessage(message: "Invalid Url", value: u))
             });
+        }
+
+        [HttpGet("magnet")]
+        [ProducesResponseType(typeof(MagnetResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMagnetAsync(
+            [Required][FromQuery] string baseUrl,
+            [Required][FromQuery] string torrentPath,
+            [Required][FromQuery] TorrentSource source)
+        {
+            var dataSource = _helper.Sources()[source];
+
+            if (!dataSource.GetSources().Contains(baseUrl))
+                return BadRequest(new ResponseMessage("Base url is not part of known values for this source", baseUrl));
+
+            dataSource.UpdateUsedSource(baseUrl);
+
+            try
+            {
+                var response = await dataSource.GetTorrentMagnetAsync(torrentPath);
+                return Ok(new MagnetResponse(response));
+            }
+            catch(Exception ex)
+            {
+                var fullUrl = Path.Combine(baseUrl, torrentPath);
+                _logger.Information(ex, $"Error retrieving magnet for {source} {fullUrl}");
+                return NotFound(new ResponseMessage("Magnet not found", fullUrl));
+            }
         }
 
         private IEnumerable<ResponseMessage> ErrorResponse(ResponseMessage errorMessage) => new[] { errorMessage };
