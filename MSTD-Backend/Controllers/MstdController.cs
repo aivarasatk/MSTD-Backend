@@ -121,6 +121,35 @@ namespace MSTD_Backend.Controllers
             }
         }
 
+        //[HttpGet("description")]
+        //[ProducesResponseType(typeof(MagnetResponse), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> GetMagnetAsync(
+        //    [Required][FromQuery] string baseUrl,
+        //    [Required][FromQuery] string torrentPath,
+        //    [Required][FromQuery] TorrentSource source)
+        //{
+        //    var dataSource = _helper.Sources()[source];
+
+        //    if (!dataSource.GetSources().Contains(baseUrl))
+        //        return BadRequest(new ResponseMessage("Base url is not part of known values for this source", baseUrl));
+
+        //    dataSource.UpdateUsedSource(baseUrl);
+
+        //    try
+        //    {
+        //        var response = await dataSource.GetTorrentMagnetAsync(torrentPath);
+        //        return Ok(new MagnetResponse(response));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var fullUrl = Path.Combine(baseUrl, torrentPath);
+        //        _logger.Information(ex, $"Error retrieving magnet for {source} {fullUrl}");
+        //        return NotFound(new ResponseMessage("Magnet not found", fullUrl));
+        //    }
+        //}
+
         private IEnumerable<ResponseMessage> ErrorResponse(ResponseMessage errorMessage) => new[] { errorMessage };
 
         private async Task<IEnumerable<TorrentQueryResult>> ExecuteTorrentSearch(IEnumerable<KeyValuePair<TorrentSource, string>> mappedUrls, 

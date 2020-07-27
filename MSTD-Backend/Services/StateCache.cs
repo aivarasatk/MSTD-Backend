@@ -30,7 +30,11 @@ namespace MSTD_Backend.Services
             if (_states is null)
                 _states = await _channel.Reader.ReadAsync();
             else
-                _channel.Reader.TryRead(out _states);//we don't expect frequent changes in source availabilities. Failing to read is Ok
+            {
+                _channel.Reader.TryRead(out var states);//we don't expect frequent changes in source availabilities. Failing to read is Ok
+
+                if (states != null) _states = states;
+            }
 
             return _states;
         }
