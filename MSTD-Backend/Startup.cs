@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MSTD_Backend.Filters;
 using MSTD_Backend.Interfaces;
 using MSTD_Backend.Services;
 using Newtonsoft.Json.Converters;
@@ -31,6 +32,7 @@ namespace MSTD_Backend
             {
                 options.Filters.Add(new ProducesAttribute("application/json"));
                 options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+                options.Filters.Add(typeof(GlobalExceptionHandlerFilter));
             })
             .AddNewtonsoftJson(opt =>
             {

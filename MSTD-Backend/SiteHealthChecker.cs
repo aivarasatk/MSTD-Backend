@@ -36,6 +36,7 @@ namespace MSTD_Backend
         {
             try
             {
+                Log.Information("Performing site health check");
                 var stateDictionary = new Dictionary<TorrentSource, IEnumerable<SourceState>>();
                 foreach(var source in _helper.Sources())
                 {
