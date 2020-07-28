@@ -21,6 +21,22 @@
             <param name="page">Current search page. Must be greater than 0</param>
             <returns></returns>
         </member>
+        <member name="M:MSTD_Backend.Controllers.MstdController.GetMagnetAsync(System.String,System.String,MSTD_Backend.Enums.TorrentSource)">
+            <summary>
+            Provides magnet links for individual torrent entries.
+            </summary>
+            <param name="baseUrl">Valid source url e.g. https://1337x.to/, https://tpb.party/ </param>
+            <param name="torrentPath">Path to torrent after base url e.g. torrent/36312396/Perry.Mason.2020.S01E06.WEB.x264-PHOENiX[TGx]</param>
+            <param name="source">One of the data providers like 1337x or ThePirateBay</param>
+        </member>
+        <member name="M:MSTD_Backend.Controllers.MstdController.GetDescriptionAsync(System.String,System.String,MSTD_Backend.Enums.TorrentSource)">
+            <summary>
+            Provides html description for individual torrent entries.
+            </summary>
+            <param name="baseUrl">Valid source url e.g. https://1337x.to/, https://tpb.party/ </param>
+            <param name="torrentPath">Path to torrent after base url e.g. torrent/36312396/Perry.Mason.2020.S01E06.WEB.x264-PHOENiX[TGx]</param>
+            <param name="source">One of the data providers like 1337x or ThePirateBay</param>
+        </member>
         <member name="P:MSTD_Backend.Models.Sources.Site.Url">
             <summary>
             Url of the mirror or orgininal site

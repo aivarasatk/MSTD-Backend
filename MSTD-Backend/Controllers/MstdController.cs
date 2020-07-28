@@ -91,7 +91,12 @@ namespace MSTD_Backend.Controllers
                 Warnings = urls.Except(validUrls).Select(u => new ResponseMessage(message: "Invalid Url", value: u))
             });
         }
-
+        /// <summary>
+        /// Provides magnet links for individual torrent entries.
+        /// </summary>
+        /// <param name="baseUrl">Valid source url e.g. https://1337x.to/, https://tpb.party/ </param>
+        /// <param name="torrentPath">Path to torrent after base url e.g. torrent/36312396/Perry.Mason.2020.S01E06.WEB.x264-PHOENiX[TGx]</param>
+        /// <param name="source">One of the data providers like 1337x or ThePirateBay</param>
         [HttpGet("magnet")]
         [ProducesResponseType(typeof(MagnetResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status400BadRequest)]
@@ -101,6 +106,9 @@ namespace MSTD_Backend.Controllers
             [Required][FromQuery] string torrentPath,
             [Required][FromQuery] TorrentSource source)
         {
+            if (source == TorrentSource.ThePirateBay)
+                return BadRequest(new ResponseMessage($"Magnets are not provided for {source}."));
+
             var dataSource = _helper.Sources()[source];
 
             if (!dataSource.GetSources().Contains(baseUrl))
@@ -121,34 +129,40 @@ namespace MSTD_Backend.Controllers
             }
         }
 
-        //[HttpGet("description")]
-        //[ProducesResponseType(typeof(MagnetResponse), StatusCodes.Status200OK)]
-        //[ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status404NotFound)]
-        //public async Task<IActionResult> GetMagnetAsync(
-        //    [Required][FromQuery] string baseUrl,
-        //    [Required][FromQuery] string torrentPath,
-        //    [Required][FromQuery] TorrentSource source)
-        //{
-        //    var dataSource = _helper.Sources()[source];
+        /// <summary>
+        /// Provides html description for individual torrent entries.
+        /// </summary>
+        /// <param name="baseUrl">Valid source url e.g. https://1337x.to/, https://tpb.party/ </param>
+        /// <param name="torrentPath">Path to torrent after base url e.g. torrent/36312396/Perry.Mason.2020.S01E06.WEB.x264-PHOENiX[TGx]</param>
+        /// <param name="source">One of the data providers like 1337x or ThePirateBay</param>
+        [HttpGet("description")]
+        [ProducesResponseType(typeof(DescriptionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseMessage), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDescriptionAsync(
+            [Required][FromQuery] string baseUrl,
+            [Required][FromQuery] string torrentPath,
+            [Required][FromQuery] TorrentSource source)
+        {
+            var dataSource = _helper.Sources()[source];
 
-        //    if (!dataSource.GetSources().Contains(baseUrl))
-        //        return BadRequest(new ResponseMessage("Base url is not part of known values for this source", baseUrl));
+            if (!dataSource.GetSources().Contains(baseUrl))
+                return BadRequest(new ResponseMessage("Base url is not part of known values for this source", baseUrl));
 
-        //    dataSource.UpdateUsedSource(baseUrl);
+            dataSource.UpdateUsedSource(baseUrl);
 
-        //    try
-        //    {
-        //        var response = await dataSource.GetTorrentMagnetAsync(torrentPath);
-        //        return Ok(new MagnetResponse(response));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var fullUrl = Path.Combine(baseUrl, torrentPath);
-        //        _logger.Information(ex, $"Error retrieving magnet for {source} {fullUrl}");
-        //        return NotFound(new ResponseMessage("Magnet not found", fullUrl));
-        //    }
-        //}
+            try
+            {
+                var response = await dataSource.GetTorrentDescriptionAsync(torrentPath);
+                return Ok(new DescriptionResponse(response));
+            }
+            catch (Exception ex)
+            {
+                var fullUrl = Path.Combine(baseUrl, torrentPath);
+                _logger.Information(ex, $"Error retrieving description for {source} {fullUrl}");
+                return NotFound(new ResponseMessage("Description not found", fullUrl));
+            }
+        }
 
         private IEnumerable<ResponseMessage> ErrorResponse(ResponseMessage errorMessage) => new[] { errorMessage };
 
