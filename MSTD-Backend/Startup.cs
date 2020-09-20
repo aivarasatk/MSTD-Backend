@@ -86,6 +86,8 @@ namespace MSTD_Backend
 
             app.UseAuthorization();
 
+            app.UseCors(builder => builder.AllowAnyOrigin());
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
