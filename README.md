@@ -2,7 +2,7 @@
 
 ## About
 This project is an ASP.NET Core 3.1 API project that replaces a (depracted) all-in-one [solution's](https://github.com/aivarasatk/MultiSourceTorrentDownloader) torrent search related logic. 
-Corresponding UI project will be created soon.
+Corresponding [UI project](https://github.com/aivarasatk/MSTD-UI).
 <br>
 At the moment backend supports original proxies and sites. Having an API deliver sources to UI allows for flexible addition and removal of new and obsolete sources.
 
