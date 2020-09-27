@@ -115,6 +115,7 @@ namespace MSTD_Backend.Services
 
                     return new TorrentQueryResult
                     {
+                        Source = TorrentSource.Leetx,
                         TorrentEntries = result,
                         IsLastPage = pagination == null || !pagination.InnerHtml.Contains("href")
                     };

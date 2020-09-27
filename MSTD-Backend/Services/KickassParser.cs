@@ -124,6 +124,7 @@ namespace MSTD_Backend.Services
 
                     return new TorrentQueryResult
                     {
+                        Source = TorrentSource.Kickass,
                         TorrentEntries = result,
                         IsLastPage = IsLastPage(pagination)
                     };

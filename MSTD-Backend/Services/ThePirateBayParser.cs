@@ -132,6 +132,7 @@ namespace MSTD_Backend.Services
                     var pagination = htmlDocument.DocumentNode.SelectNodes("//img[@alt='Next']");
                     return new TorrentQueryResult
                     {
+                        Source = TorrentSource.ThePirateBay,
                         TorrentEntries = result,
                         IsLastPage = pagination == null
                     };

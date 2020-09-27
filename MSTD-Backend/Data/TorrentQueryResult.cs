@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MSTD_Backend.Enums;
+using System.Collections.Generic;
 
 namespace MSTD_Backend.Data
 {
@@ -10,5 +11,6 @@ namespace MSTD_Backend.Data
         }
         public IEnumerable<TorrentEntry> TorrentEntries { get; set; }
         public bool IsLastPage { get; set; }
+        public TorrentSource Source { get; set; }
     }
 }
